@@ -20,7 +20,7 @@ func TestStore(t *testing.T) {
 	var err error
 
 	mockSqlHandler.EXPECT().Execute(query, user.Name, user.DisplayName, user.Email, user.Password).Return(mockSqlResult, err)
-	mockSqlResult.EXPECT().LastInsertedId().Return(expectedID, err)
+	mockSqlResult.EXPECT().LastInsertId().Return(expectedID, err)
 
 	userRepository := NewUserRepository(mockSqlHandler)
 	resultID, err := userRepository.Store(user)
