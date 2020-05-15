@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   app:
-    container_name:
+    container_name: user-auth-jwt-api
     tty: true
     build:
       context: .
