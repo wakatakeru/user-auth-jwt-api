@@ -89,4 +89,7 @@ flycheck_*.el
 # Ignore all local history of files
 .history
 
+### Docker Compose
+docker-compose.yml
+
 # End of https://www.gitignore.io/api/go,emacs,direnv,visualstudiocode
