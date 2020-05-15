@@ -95,19 +95,19 @@ func (m *MockSqlResult) EXPECT() *MockSqlResultMockRecorder {
 	return m.recorder
 }
 
-// LastInsertedId mocks base method.
-func (m *MockSqlResult) LastInsertedId() (int64, error) {
+// LastInsertId mocks base method.
+func (m *MockSqlResult) LastInsertId() (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LastInsertedId")
+	ret := m.ctrl.Call(m, "LastInsertId")
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// LastInsertedId indicates an expected call of LastInsertedId.
-func (mr *MockSqlResultMockRecorder) LastInsertedId() *gomock.Call {
+// LastInsertId indicates an expected call of LastInsertId.
+func (mr *MockSqlResultMockRecorder) LastInsertId() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LastInsertedId", reflect.TypeOf((*MockSqlResult)(nil).LastInsertedId))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LastInsertId", reflect.TypeOf((*MockSqlResult)(nil).LastInsertId))
 }
 
 // RowsAffected mocks base method.
