@@ -6,7 +6,7 @@ type SqlHandler interface {
 }
 
 type SqlResult interface {
-	LastInsertedId() (int64, error)
+	LastInsertId() (int64, error)
 	RowsAffected() (int64, error)
 }
 

@@ -44,7 +44,7 @@ func NewSqlHandler() *SqlHandler {
 
 func (handler *SqlHandler) Execute(statement string, args ...interface{}) (database.SqlResult, error) {
 	sqlResult := SqlResult{}
-	result, err := handler.Conn.Query(statement, args...)
+	result, err := handler.Conn.Exec(statement, args...)
 	if err != nil {
 		return result, err
 	}
@@ -62,7 +62,7 @@ func (handler *SqlHandler) Query(statement string, args ...interface{}) (databas
 	return row, nil
 }
 
-func (r SqlResult) LastInsertedId() (int64, error) {
+func (r SqlResult) LastInsertId() (int64, error) {
 	return r.Result.LastInsertId()
 }
 
@@ -78,6 +78,6 @@ func (r SqlRow) Next() bool {
 	return r.Rows.Next()
 }
 
-func (r SqlRow) Close() bool {
+func (r SqlRow) Close() error {
 	return r.Rows.Close()
 }
