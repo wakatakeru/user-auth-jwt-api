@@ -33,3 +33,38 @@ func TestStore(t *testing.T) {
 		t.Error("Store is not same as expected")
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	ctrl := gomock.NewController(t)
+
+	mockSqlHandler := NewMockSqlHandler(ctrl)
+	mockRow := NewMockSqlRow(ctrl)
+
+	query := "UPDATE users SET name=?, display_name=?, email=?, password=? WHERE id=?"
+	user := domain.User{}
+	var err error
+	var id int
+	var name string
+	var display_name string
+	var email string
+	var password string
+
+	mockSqlHandler.EXPECT().Query(
+		query,
+		user.Name,
+		user.DisplayName,
+		user.Email,
+		user.Password,
+		user.ID,
+	).Return(mockRow, err)
+	mockRow.EXPECT().Next()
+	mockRow.EXPECT().Scan(&id, &name, &display_name, &email, &password)
+	mockRow.EXPECT().Close()
+
+	userRepository := NewUserRepository(mockSqlHandler)
+	_, err = userRepository.Update(user)
+
+	if err != nil {
+		t.Error("Update is not same as expected")
+	}
+}

@@ -29,3 +29,38 @@ func (repo *UserRepository) Store(u domain.User) (id int, err error) {
 	id = int(id64)
 	return
 }
+
+func (repo *UserRepository) Update(u domain.User) (user domain.User, err error) {
+	row, err := repo.Query(
+		"UPDATE users SET name=?, display_name=?, email=?, password=? WHERE id=?",
+		u.Name,
+		u.DisplayName,
+		u.Email,
+		u.Password,
+		u.ID,
+	)
+	defer row.Close()
+	if err != nil {
+		return
+	}
+
+	var id int
+	var name string
+	var display_name string
+	var email string
+	var password string
+
+	row.Next()
+	err = row.Scan(&id, &name, &display_name, &email, &password)
+	if err != nil {
+		return
+	}
+
+	user.ID = id
+	user.Name = name
+	user.DisplayName = display_name
+	user.Email = email
+	user.Password = password
+
+	return
+}
