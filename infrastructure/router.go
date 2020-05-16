@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"github.com/gin-contrib/cors"
 	gin "github.com/gin-gonic/gin"
-	
+
 	"github.com/wakatakeru/user-auth-jwt-api/interfaces/controllers"
 )
 
@@ -19,7 +19,12 @@ func init() {
 
 	userController := controllers.NewUserController(NewSqlHandler())
 
-	router.POST("/users", func(c *gin.Context) {userController.Create(c)})
+	// Endpoint for Users
+	router.POST("/users", func(c *gin.Context) { userController.Create(c) })
+	router.GET("/users/:name", func(c *gin.Context) { userController.Show(c) })
+
+	// Endpoint for Login
+	router.POST("/login", func(c *gin.Context) { userController.Login(c) })
 
 	Router = router
 }
