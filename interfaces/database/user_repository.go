@@ -93,3 +93,32 @@ func (repo *UserRepository) FindByName(userName string) (user domain.User, err e
 	user.Password = password
 	return
 }
+
+func (repo *UserRepository) FindByID(userID int) (user domain.User, err error) {
+	row, err := repo.Query(
+		"SELECT id, name, display_name, email, password FROM users WHERE id=?", userID,
+	)
+	defer row.Close()
+	if err != nil {
+		return
+	}
+
+	var id int
+	var name string
+	var displayName string
+	var email string
+	var password string
+
+	row.Next()
+	err = row.Scan(&id, &name, &displayName, &email, &password)
+	if err != nil {
+		return
+	}
+
+	user.ID = id
+	user.Name = name
+	user.DisplayName = displayName
+	user.Email = email
+	user.Password = password
+	return
+}

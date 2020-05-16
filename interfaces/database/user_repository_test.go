@@ -101,3 +101,36 @@ func TestFindByName(t *testing.T) {
 		t.Error("FindByName is not same as expected")
 	}
 }
+
+func TestFindByID(t *testing.T) {
+	ctrl := gomock.NewController(t)
+
+	mockSqlHandler := NewMockSqlHandler(ctrl)
+	mockRow := NewMockSqlRow(ctrl)
+
+	query := "SELECT id, name, display_name, email, password FROM users WHERE id=?"
+	user := domain.User{}
+	var err error
+	var userID int
+	var id int
+	var name string
+	var displayName string
+	var email string
+	var password string
+
+	mockSqlHandler.EXPECT().Query(query, userID).Return(mockRow, err)
+	mockRow.EXPECT().Next()
+	mockRow.EXPECT().Scan(&id, &name, &displayName, &email, &password)
+	mockRow.EXPECT().Close()
+
+	userRepository := NewUserRepository(mockSqlHandler)
+	user, err = userRepository.FindByID(userID)
+
+	if err != nil {
+		t.Error("FindByID is not same as expected")
+	}
+
+	if !reflect.DeepEqual(user.ID, userID) {
+		t.Error("FindByID is not same as expected")
+	}
+}
