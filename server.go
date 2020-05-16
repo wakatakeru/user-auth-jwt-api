@@ -1,9 +1,7 @@
 package main
 
-import (
-	"fmt"
-)
+import "github.com/wakatakeru/user-auth-jwt-api/infrastructure"
 
 func main() {
-	fmt.Print("Hello, World")
+	infrastructure.Router.Run()
 }

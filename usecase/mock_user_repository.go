@@ -49,10 +49,10 @@ func (mr *MockUserRepositoryMockRecorder) Store(arg0 interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockUserRepository) Update(arg0 domain.User) (domain.User, error) {
+func (m *MockUserRepository) Update(arg0 domain.User) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0)
-	ret0, _ := ret[0].(domain.User)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

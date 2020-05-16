@@ -38,33 +38,31 @@ func TestUpdate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	mockSqlHandler := NewMockSqlHandler(ctrl)
-	mockRow := NewMockSqlRow(ctrl)
+	mockSqlResult := NewMockSqlResult(ctrl)
 
-	query := "UPDATE users SET name=?, display_name=?, email=?, password=? WHERE id=?"
+	query := "UPDATE users SET name=?, display_name=?, email=?, password=? WHERE name=?"
 	user := domain.User{}
 	var err error
-	var id int
-	var name string
-	var displayName string
-	var email string
-	var password string
+	var expectedCount int64
 
-	mockSqlHandler.EXPECT().Query(
+	mockSqlHandler.EXPECT().Execute(
 		query,
 		user.Name,
 		user.DisplayName,
 		user.Email,
 		user.Password,
-		user.ID,
-	).Return(mockRow, err)
-	mockRow.EXPECT().Next()
-	mockRow.EXPECT().Scan(&id, &name, &displayName, &email, &password)
-	mockRow.EXPECT().Close()
+		user.Name,
+	).Return(mockSqlResult, err)
+	mockSqlResult.EXPECT().RowsAffected().Return(expectedCount, err)
 
 	userRepository := NewUserRepository(mockSqlHandler)
-	_, err = userRepository.Update(user)
+	resultCount, err := userRepository.Update(user)
 
 	if err != nil {
+		t.Error("Update is not same as expected")
+	}
+
+	if !reflect.DeepEqual(int(expectedCount), resultCount) {
 		t.Error("Update is not same as expected")
 	}
 }
