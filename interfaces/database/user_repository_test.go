@@ -45,7 +45,7 @@ func TestUpdate(t *testing.T) {
 	var err error
 	var id int
 	var name string
-	var display_name string
+	var displayName string
 	var email string
 	var password string
 
@@ -58,7 +58,7 @@ func TestUpdate(t *testing.T) {
 		user.ID,
 	).Return(mockRow, err)
 	mockRow.EXPECT().Next()
-	mockRow.EXPECT().Scan(&id, &name, &display_name, &email, &password)
+	mockRow.EXPECT().Scan(&id, &name, &displayName, &email, &password)
 	mockRow.EXPECT().Close()
 
 	userRepository := NewUserRepository(mockSqlHandler)
