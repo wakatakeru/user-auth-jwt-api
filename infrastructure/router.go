@@ -22,6 +22,7 @@ func init() {
 	// Endpoint for Users
 	router.POST("/users", func(c *gin.Context) { userController.Create(c) })
 	router.GET("/users/:name", func(c *gin.Context) { userController.Show(c) })
+	router.PATCH("/users/:name", func(c *gin.Context) { userController.Update(c) })
 
 	// Endpoint for Login
 	router.POST("/login", func(c *gin.Context) { userController.Login(c) })
