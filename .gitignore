@@ -92,4 +92,8 @@ flycheck_*.el
 ### Docker Compose
 docker-compose.yml
 
+### RSA Keys
+/rsa/private.key
+/rsa/public.key
+
 # End of https://www.gitignore.io/api/go,emacs,direnv,visualstudiocode
