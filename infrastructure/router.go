@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	gin "github.com/gin-gonic/gin"
 	
-	"github.com/wakatakeru/refmag-index-api/interfaces/controllers"
+	"github.com/wakatakeru/user-auth-jwt-api/interfaces/controllers"
 )
 
 var Router *gin.Engine
