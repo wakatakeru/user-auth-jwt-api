@@ -47,9 +47,11 @@ func (mr *MockContextMockRecorder) Param(arg0 interface{}) *gomock.Call {
 }
 
 // Bind mocks base method.
-func (m *MockContext) Bind(arg0 interface{}) {
+func (m *MockContext) Bind(arg0 interface{}) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Bind", arg0)
+	ret := m.ctrl.Call(m, "Bind", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Bind indicates an expected call of Bind.
