@@ -4,7 +4,7 @@ import (
 	"github.comm/wakatakeru/user-auth-jwt-api/domain"
 )
 
-type PaperRepository interface {
+type UserRepository interface {
 	Store(domain.User) (int, error)
 	Update(domain.User) (domain.User, error)
 	FindByName(string) (domain.User, error)
