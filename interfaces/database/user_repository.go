@@ -30,38 +30,25 @@ func (repo *UserRepository) Store(u domain.User) (id int, err error) {
 	return
 }
 
-func (repo *UserRepository) Update(u domain.User) (user domain.User, err error) {
-	row, err := repo.Query(
-		"UPDATE users SET name=?, display_name=?, email=?, password=? WHERE id=?",
+func (repo *UserRepository) Update(u domain.User) (count int, err error) {
+	result, err := repo.Execute(
+		"UPDATE users SET name=?, display_name=?, email=?, password=? WHERE name=?",
 		u.Name,
 		u.DisplayName,
 		u.Email,
 		u.Password,
-		u.ID,
+		u.Name,
 	)
-	defer row.Close()
+
 	if err != nil {
 		return
 	}
 
-	var id int
-	var name string
-	var displayName string
-	var email string
-	var password string
-
-	row.Next()
-	err = row.Scan(&id, &name, &displayName, &email, &password)
+	count64, err := result.RowsAffected()
 	if err != nil {
 		return
 	}
-
-	user.ID = id
-	user.Name = name
-	user.DisplayName = displayName
-	user.Email = email
-	user.Password = password
-
+	count = int(count64)
 	return
 }
 

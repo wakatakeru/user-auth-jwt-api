@@ -29,13 +29,14 @@ func TestUpdate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	var expectedUser domain.User
+	var expectedCount int
 	var err error
 
 	MockUserRepository := NewMockUserRepository(ctrl)
-	MockUserRepository.EXPECT().Update(expectedUser).Return(expectedUser, err)
+	MockUserRepository.EXPECT().Update(expectedUser).Return(expectedCount, err)
 
 	userInteractor := NewUserInteractor(MockUserRepository)
-	expectedUser, err = userInteractor.Update(expectedUser)
+	expectedCount, err = userInteractor.Update(expectedUser)
 
 	if err != nil {
 		t.Error("Update is not same as expected")

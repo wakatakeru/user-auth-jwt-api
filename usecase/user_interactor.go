@@ -16,8 +16,8 @@ func (interactor *UserInteractor) Add(u domain.User) (id int, err error) {
 	return
 }
 
-func (interactor *UserInteractor) Update(u domain.User) (user domain.User, err error) {
-	user, err = interactor.UserRepository.Update(u)
+func (interactor *UserInteractor) Update(u domain.User) (count int, err error) {
+	count, err = interactor.UserRepository.Update(u)
 	return
 }
 
