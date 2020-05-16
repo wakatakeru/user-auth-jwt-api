@@ -6,7 +6,7 @@ import (
 
 type UserRepository interface {
 	Store(domain.User) (int, error)
-	Update(domain.User) (domain.User, error)
+	Update(domain.User) (int, error)
 	FindByName(string) (domain.User, error)
 	FindByID(int) (domain.User, error)
 }
