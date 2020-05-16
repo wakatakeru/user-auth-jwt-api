@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.comm/wakatakeru/user-auth-jwt-api/domain"
+	"github.com/wakatakeru/user-auth-jwt-api/domain"
 )
 
 type UserRepository interface {
