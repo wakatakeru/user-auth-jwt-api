@@ -1,15 +1,10 @@
 package controllers
 
 import (
-	"errors"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/wakatakeru/user-auth-jwt-api/domain"
 	"github.com/wakatakeru/user-auth-jwt-api/interfaces/database"
 	"github.com/wakatakeru/user-auth-jwt-api/usecase"
@@ -17,15 +12,17 @@ import (
 
 type UserController struct {
 	Interactor usecase.UserInteractor
+	JWTHandler JWTHandler
 }
 
-func NewUserController(sqlHandler database.SqlHandler) *UserController {
+func NewUserController(sqlHandler database.SqlHandler, jwtHandler JWTHandler) *UserController {
 	return &UserController{
 		Interactor: usecase.UserInteractor{
 			UserRepository: &database.UserRepository{
 				SqlHandler: sqlHandler,
 			},
 		},
+		JWTHandler: jwtHandler,
 	}
 }
 
@@ -51,7 +48,7 @@ func (controller *UserController) Create(c Context) {
 	}
 
 	user.ID = id
-	jwt, err := generateJWT(user)
+	jwt, err := controller.JWTHandler.Generate(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
@@ -61,7 +58,7 @@ func (controller *UserController) Create(c Context) {
 }
 
 func (controller *UserController) Show(c Context) {
-	challengeUser, err := verifyJWT(c.GetHeader("Authorization"))
+	challengeUser, err := controller.JWTHandler.Verify(c.GetHeader("Authorization"))
 	if err != nil {
 		c.JSON(http.StatusForbidden, nil)
 		return
@@ -85,7 +82,7 @@ func (controller *UserController) Show(c Context) {
 
 func (controller *UserController) Update(c Context) {
 	user := domain.User{}
-	challengeUser, err := verifyJWT(c.GetHeader("Authorization"))
+	challengeUser, err := controller.JWTHandler.Verify(c.GetHeader("Authorization"))
 	if err != nil {
 		c.JSON(http.StatusForbidden, nil)
 		return
@@ -139,7 +136,7 @@ func (controller *UserController) Login(c Context) {
 		return
 	}
 
-	jwt, err := generateJWT(user)
+	jwt, err := controller.JWTHandler.Generate(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
@@ -160,60 +157,4 @@ func hashPassword(plainPassword string) (hashedPassword string, err error) {
 
 func verifyPassword(hashedPassword string, plainPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
-}
-
-func generateJWT(user domain.User) (jwtString string, err error) {
-	signBytes, err := ioutil.ReadFile(os.Getenv("JWT_PRIV_KEY_PATH"))
-	if err != nil {
-		return "", err
-	}
-
-	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	if err != nil {
-		return "", err
-	}
-
-	// Apply method is RS256
-	token := jwt.New(jwt.SigningMethodRS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["iss"] = os.Getenv("JWT_ISSUER")
-	claims["sub"] = strconv.Itoa(user.ID)
-	claims["name"] = user.Name
-	claims["display_name"] = user.DisplayName
-	claims["email"] = user.Email
-
-	tokenString, err := token.SignedString(signKey)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
-}
-
-func verifyJWT(jwtString string) (user domain.User, err error) {
-	user = domain.User{}
-
-	type CustomClaims struct {
-		Name string `json:name`
-		jwt.StandardClaims
-	}
-
-	verifyBytes, err := ioutil.ReadFile(os.Getenv("JWT_PUB_KEY_PATH"))
-	verifyKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	if err != nil {
-		return user, err
-	}
-
-	token, err := jwt.ParseWithClaims(jwtString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return verifyKey, nil
-	})
-
-	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-		user.ID, _ = strconv.Atoi(claims.Subject)
-		user.Name = claims.Name
-		return user, nil
-	}
-
-	return user, errors.New("Failed Parse JWT")
 }
