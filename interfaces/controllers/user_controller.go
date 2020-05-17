@@ -3,26 +3,26 @@ package controllers
 import (
 	"net/http"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/wakatakeru/user-auth-jwt-api/domain"
 	"github.com/wakatakeru/user-auth-jwt-api/interfaces/database"
 	"github.com/wakatakeru/user-auth-jwt-api/usecase"
 )
 
 type UserController struct {
-	Interactor usecase.UserInteractor
-	JWTHandler JWTHandler
+	Interactor   usecase.UserInteractor
+	JWTHandler   JWTHandler
+	CryptHandler CryptHandler
 }
 
-func NewUserController(sqlHandler database.SqlHandler, jwtHandler JWTHandler) *UserController {
+func NewUserController(sqlHandler database.SqlHandler, jwtHandler JWTHandler, cryptHandler CryptHandler) *UserController {
 	return &UserController{
 		Interactor: usecase.UserInteractor{
 			UserRepository: &database.UserRepository{
 				SqlHandler: sqlHandler,
 			},
 		},
-		JWTHandler: jwtHandler,
+		JWTHandler:   jwtHandler,
+		CryptHandler: cryptHandler,
 	}
 }
 
@@ -34,7 +34,7 @@ func (controller *UserController) Create(c Context) {
 		return
 	}
 
-	user.Password, err = hashPassword(user.Password)
+	user.Password, err = controller.CryptHandler.Hash(user.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
@@ -100,7 +100,7 @@ func (controller *UserController) Update(c Context) {
 		return
 	}
 
-	user.Password, err = hashPassword(user.Password)
+	user.Password, err = controller.CryptHandler.Hash(user.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
@@ -130,7 +130,7 @@ func (controller *UserController) Login(c Context) {
 		return
 	}
 
-	err = verifyPassword(user.Password, challengeUser.Password)
+	err = controller.CryptHandler.Verify(user.Password, challengeUser.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, nil)
 		return
@@ -143,18 +143,4 @@ func (controller *UserController) Login(c Context) {
 	}
 
 	c.JSON(http.StatusOK, jwt)
-}
-
-func hashPassword(plainPassword string) (hashedPassword string, err error) {
-	password, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-
-	hashedPassword = string(password)
-	return
-}
-
-func verifyPassword(hashedPassword string, plainPassword string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 }

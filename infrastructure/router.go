@@ -17,7 +17,7 @@ func init() {
 	config.AllowOrigins = []string{"http://localhost:3000"}
 	router.Use(cors.New(config))
 
-	userController := controllers.NewUserController(NewSqlHandler(), NewJWTHandler())
+	userController := controllers.NewUserController(NewSqlHandler(), NewJWTHandler(), NewCryptHandler())
 
 	// Endpoint for Users
 	router.POST("/users", func(c *gin.Context) { userController.Create(c) })
