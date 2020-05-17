@@ -24,3 +24,21 @@ func TestCreate(t *testing.T) {
 	mockJWTHandler.EXPECT().Generate(user).Return(jwt, err)
 	mockContext.EXPECT().JSON(http.StatusCreated, jwt)
 }
+
+func TestShow(t *testing.T) {
+	ctrl := gomock.NewController(t)
+
+	mockContext := NewMockContext(ctrl)
+	mockJWTHandler := NewMockJWTHandler(ctrl)
+
+	var authToken string
+	var challengeUser domain.User
+	var user domain.User
+	var name string
+	var err error
+
+	mockContext.EXPECT().GetHeader("Authorization").Return(authToken)
+	mockJWTHandler.EXPECT().Verify(authToken).Return(challengeUser, err)
+	mockContext.EXPECT().Param("name").Return(name)
+	mockContext.EXPECT().JSON(http.StatusOK, user)
+}
