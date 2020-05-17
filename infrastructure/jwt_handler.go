@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/wakatakeru/user-auth-jwt-api/domain"
@@ -58,10 +59,14 @@ func (handler *JWTHandler) Generate(user domain.User) (token string, err error) 
 	jwtHandler := NewJWTHandler()
 	jsonWebToken := jwt.New(jwt.SigningMethodRS256)
 
-	// [TODO]: Refactoring
+	timeNow := int(time.Now().Unix())
+	duraExp, _ := strconv.Atoi(os.Getenv("JWT_EXP_DURA_SEC"))
+	expTime := timeNow + duraExp
+
 	claims := jsonWebToken.Claims.(jwt.MapClaims)
 	claims["iss"] = os.Getenv("JWT_ISSUER")
 	claims["sub"] = strconv.Itoa(user.ID)
+	claims["exp"] = expTime
 	claims["name"] = user.Name
 	claims["display_name"] = user.DisplayName
 	claims["email"] = user.Email
