@@ -18,10 +18,6 @@ type JWTHandler struct {
 	PubKey  *rsa.PublicKey
 }
 
-type JSONWebToken struct {
-	Token jwt.Token
-}
-
 type CustomClaims struct {
 	Name string `json:name`
 	jwt.StandardClaims
