@@ -8,12 +8,16 @@ services:
       context: .
       target: builder
     ports:
-      - "8080:8081"
+      - "8081:8081"
     environment:
       DB_ADDR: db:3306
       DB_USER: userauth
       DB_NAME: userauth
       DB_PASS: userauth
+      JWT_PRIV_KEY_PATH: ./rsa/private-key.pem
+      JWT_PUB_KEY_PATH: ./rsa/public-key.pem
+      JWT_ISSUER: wakatakeru
+      JWT_EXP_DURA_SEC: 1200
     depends_on:
       - db
     command: ./bin/server
@@ -22,7 +26,7 @@ services:
     hostname: db
     image: mysql:8.0.20
     environment:
-      MYSQL_ROOT_PASSWORD:
+      MYSQL_ROOT_PASSWORD: userauth
       MYSQL_USER: userauth
       MYSQL_PASSWORD: userauth
       MYSQL_DATABASE: userauth
