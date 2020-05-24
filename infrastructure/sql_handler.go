@@ -46,7 +46,7 @@ func (handler *SqlHandler) Execute(statement string, args ...interface{}) (datab
 	sqlResult := SqlResult{}
 	result, err := handler.Conn.Exec(statement, args...)
 	if err != nil {
-		return result, err
+		return SqlResult{}, err
 	}
 	sqlResult.Result = result
 	return sqlResult, nil
@@ -55,9 +55,9 @@ func (handler *SqlHandler) Execute(statement string, args ...interface{}) (datab
 func (handler *SqlHandler) Query(statement string, args ...interface{}) (database.SqlRow, error) {
 	rows, err := handler.Conn.Query(statement, args...)
 	if err != nil {
-		return new(SqlRow), err
+		return SqlRow{}, err
 	}
-	row := new(SqlRow)
+	row := SqlRow{}
 	row.Rows = rows
 	return row, nil
 }
